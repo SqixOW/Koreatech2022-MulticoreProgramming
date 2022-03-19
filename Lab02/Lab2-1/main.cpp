@@ -8,8 +8,8 @@
 // Set the size of matrix and vector
 // matrix A = m by n
 // vector b = n by 1
-#define m (3000)
-#define n (3000)
+#define m (10000)
+#define n (10000)
 
 #define GenFloat (rand() % 100 + ((float)(rand() % 100) / 100.0))
 void genRandomInput();
@@ -56,6 +56,7 @@ int main(int argc, char** argv)
 	int etcWorkSize = m % maxThreads;
 	#pragma omp parallel num_threads(maxThreads)
 	{
+		
 		#pragma omp for
 		for (int i = 0; i < m; i++)
 		{
@@ -66,14 +67,14 @@ int main(int argc, char** argv)
 		}
 		/*
 		#pragma omp for
-		for (int j = 0; j < n; j++)
+		for (int i = 0; i < n; i++)
 		{
-			for (int i = 0; i < m; i++)
+			for (int j = 0; j < m; j++)
 			{
-				Y_parallel[i] += A[i][j] * X[j];
+				Y_parallel[j] += A[j][i] * X[i];
 			}
-		}
-		*/
+		}*/
+		
 	}
 	//** HERE
 	//** Write your code implementing the parallel algorithm here
@@ -83,7 +84,7 @@ int main(int argc, char** argv)
 
 	//** 3. Result checking code **//
 	bool isNotCorrect = false;
-	for (int i = 0; i < n; i++)
+	for (int i = 0; i < m; i++)
 	{
 		if (Y_serial[i] != Y_parallel[i]) 
 		{
