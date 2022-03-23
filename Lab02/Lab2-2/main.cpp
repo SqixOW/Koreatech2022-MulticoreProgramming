@@ -21,7 +21,8 @@ int main(int argc, char** argv)
 	}
 
 	double x_range = (end_x_axis - init_x_axis) / div;
-	double sum = 0;
+	double sum_serial = 0;
+	double sum_parallel = 0;
 
 	//** 1. Serial code **//
 
@@ -29,19 +30,18 @@ int main(int argc, char** argv)
 
 	for (int i = 0; i < div_index; i++)
 	{
-		double x1 = i * x_range;
-		double x2 = (i + 1) * x_range;
+		double x1 = init_x_axis + i * x_range;
+		double x2 = init_x_axis + (i + 1) * x_range;
 		double area = x_range * 0.5 * (x1 * x1 + x2 * x2);
-		sum += area;
+		sum_serial += area;
 	}
 
 	timer.offTimer(0);
 
-	printf("%f\n", sum);
+	printf("Serial : %f\n", sum_serial);
 
 	//** 2. Parallel code **//
 
-	sum = 0;
 	int max_threads = omp_get_max_threads();
 	double* result_arr = new double[div_index] {};
 	timer.onTimer(1);
@@ -50,8 +50,8 @@ int main(int argc, char** argv)
 		#pragma omp for
 		for (int i = 0; i < div_index; i++)
 		{
-			double x1 = i * x_range;
-			double x2 = (i + 1) * x_range;
+			double x1 = init_x_axis + i * x_range;
+			double x2 = init_x_axis + (i + 1) * x_range;
 			double area = x_range * 0.5 * (x1 * x1 + x2 * x2);
 			result_arr[i] += area;
 		}
@@ -62,12 +62,13 @@ int main(int argc, char** argv)
 
 	for (int i = 0; i < div_index; i++)
 	{
-		sum += result_arr[i];
+		sum_parallel += result_arr[i];
 	}
 
-	printf("%f\n", sum);
+	printf("Parallel : %f\n", sum_parallel);
 	//** 3. Result checking code **//
-
+	if (sum_serial == sum_parallel) printf("Correct!");
+	else printf("Not Correct!");
 
 	timer.printTimer();
 	EXIT_WIHT_KEYPRESS;
